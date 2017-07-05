@@ -56,7 +56,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //        SQLiteHelper helper = new SQLiteHelper(this);
 //        SQLiteDatabase db = helper.getReadableDatabase();
 
-
         calllogDao = new CalllogDaoImpl(this);
 //        calllogDao.insert(new Calllog("15716017670", System.currentTimeMillis(), 10000, "1499083327595.3gp"));
 
@@ -105,10 +104,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         Calllog calllog = calllogList.get(position);
                         File file = new File(Environment.getExternalStorageDirectory()+File.separator+"Recording", calllog.getFile());
                         calllogDao.delete(calllog.getId());
-                        file.delete();
                         calllogList.remove(position);
                         adapter.notifyDataSetChanged();
-                        Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                        if (file.delete()) {
+                            Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -162,15 +162,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         @Override
                         public void run() {
 
-                            progress = (int) ((mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100);
-                            timestamps = mediaPlayer.getCurrentPosition();
-                            tv_calllog_info.setText(simpleDateFormat.format(new Date(timestamps)) + " 正在播放：" + calllogList.get(position).getFile());
-                            btn_play.setEnabled(true);
-                            btn_stop.setEnabled(true);
-                            btn_fast.setEnabled(true);
-                            btn_rewind.setEnabled(true);
-                            btn_fast.setEnabled(true);
-                            btn_play.setBackgroundResource(R.drawable.selector_pause);
+                            if (!mediaPlayer.isPlaying() && progress==99) {
+                                isGoingToPlay = true;
+                                progress = 0;
+                                timestamps = 0;
+                                btn_play.setBackgroundResource(R.drawable.selector_play);
+                                btn_stop.setEnabled(false);
+                                btn_rewind.setEnabled(false);
+                                btn_fast.setEnabled(false);
+                                tv_calllog_info.setText(simpleDateFormat.format(new Date(timestamps)) + " 播放完毕：" + calllogList.get(position).getFile());
+                                handler.removeCallbacks(this);
+                            }
+
+                            if (mediaPlayer.isPlaying()) {
+                                progress = (int) ((mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100);
+                                timestamps = mediaPlayer.getCurrentPosition();
+                                tv_calllog_info.setText(simpleDateFormat.format(new Date(timestamps)) + " 正在播放：" + calllogList.get(position).getFile());
+                                btn_play.setBackgroundResource(R.drawable.selector_pause);
+                                btn_play.setEnabled(true);
+                                btn_stop.setEnabled(true);
+                                btn_fast.setEnabled(true);
+                                btn_rewind.setEnabled(true);
+                                btn_fast.setEnabled(true);
+                            }
 
                             handler = new Handler() {
 
@@ -224,6 +238,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                     }
                                 }
                             };
+
                             pb.setProgress(progress);
                             handler.postDelayed(this, 1);
                         }

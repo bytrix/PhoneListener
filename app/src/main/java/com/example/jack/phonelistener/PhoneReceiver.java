@@ -24,6 +24,7 @@ public class PhoneReceiver extends BroadcastReceiver {
 //    boolean singleCallState;
 //    private static String mLastState;
     private long lastCreateTime;
+    private static long currentTimeMillis;
 
     public PhoneReceiver() {
     }
@@ -36,6 +37,7 @@ public class PhoneReceiver extends BroadcastReceiver {
 
 //        Toast.makeText(context, "OnReceive...", Toast.LENGTH_SHORT).show();
         Log.d("phonelistener_tag", "onReceive");
+        this.currentTimeMillis = System.currentTimeMillis();
 //        singleCallState = false;
         String mState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
 //        Log.d("phonelistener_tag", "state: " + mState + ", lastState: " + mLastState);
@@ -85,7 +87,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                         Log.d("phonelistener_tag", "OFFHOOK, incomingNumber: " + this.incomingNumber);
 //                        if (singleCallState) {
                             Toast.makeText(context, "正在录音。。。", Toast.LENGTH_SHORT).show();
-                            String filename = System.currentTimeMillis() + ".3gp";
+                            String filename = PhoneReceiver.currentTimeMillis + ".3gp";
                             file = new File(root.getAbsoluteFile(), filename);
                             try {
                                 mediaRecorder = new MediaRecorder();
