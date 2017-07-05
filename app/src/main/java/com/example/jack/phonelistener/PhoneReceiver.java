@@ -1,10 +1,15 @@
 package com.example.jack.phonelistener;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -25,8 +30,23 @@ public class PhoneReceiver extends BroadcastReceiver {
 //    private static String mLastState;
     private long lastCreateTime;
     private static long currentTimeMillis;
+    private static long rowId;
+    private PhoneService.PhoneBinder mBinder;
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mBinder = (PhoneService.PhoneBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     public PhoneReceiver() {
+        Log.d("phonelistener_tag", "PhoneReceiver constructor, phoneReceiver: " + this + ", " + System.currentTimeMillis());
     }
 
     @Override
@@ -37,6 +57,8 @@ public class PhoneReceiver extends BroadcastReceiver {
 
 //        Toast.makeText(context, "OnReceive...", Toast.LENGTH_SHORT).show();
         Log.d("phonelistener_tag", "onReceive");
+        Intent service = new Intent(context, PhoneService.class);
+        context.getApplicationContext().bindService(service, conn, Context.BIND_AUTO_CREATE);
         this.currentTimeMillis = System.currentTimeMillis();
 //        singleCallState = false;
         String mState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
@@ -53,7 +75,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             }
 //        files = root.list();
 //        calllogList = calllogDao.query();
-            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         PhoneStateListener phoneStateListener = new PhoneStateListener() {
             private long startTime;
@@ -113,9 +135,15 @@ public class PhoneReceiver extends BroadcastReceiver {
                                 endTime = System.currentTimeMillis();
                                 Calllog calllog = new Calllog(this.incomingNumber, startTime, endTime-startTime, file.getName());
                                 Log.i("phonelistener_tag", "begin to insert...");
-                                long rowId = calllogDao.insert(calllog);
+                                rowId = calllogDao.insert(calllog);
                                 Log.i("phonelistener_tag", "insert over, rowId: " + rowId);
                                 Toast.makeText(context, "录音结束，文件保存至：" + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+//                                mBinder.setId(rowId);
+                                if (rowId != 0) {
+                                    mBinder.getService().setId(rowId);
+                                }
+                                Log.i("phonelistener_tag", "mBinder.getService.getId(): " + mBinder.getService().getId());
+//                                Toast.makeText(context, "rowId: " + mBinder.setId(rowId);, Toast.LENGTH_LONG).show();
 //                            files = root.list();
 //                            lv_files.deferNotifyDataSetChanged();
                             } catch (Exception e) {

@@ -22,7 +22,7 @@ import java.util.List;
 public class RecordingAdapter extends BaseAdapter {
 
     private Context context;
-    private List list;
+    private List<Calllog> list;
     private int selectItem = -1;
 
     public int getSelectItem() {
@@ -55,20 +55,30 @@ public class RecordingAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Calllog calllog = (Calllog) list.get(position);
+        Calllog calllog = list.get(position);
+//        Log.d("phonelistener_tag", "position: " + position);
+//        Log.d("phonelistener_tag", "calllog: " + calllog);
         convertView = View.inflate(context, R.layout.adapter_recording, null);
-        String phone = calllog.getPhone();
-        long time = calllog.getCreateTime();
-        long duration = calllog.getDuration();
-        TextView tv_phone = (TextView) convertView.findViewById(R.id.tv_phone);
-        TextView tv_time = (TextView) convertView.findViewById(R.id.tv_time);
-        TextView tv_duration = (TextView) convertView.findViewById(R.id.tv_duration);
-        tv_phone.setText(phone);
-        tv_time.setText( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time)));
-        tv_duration.setText(new SimpleDateFormat("mm:ss").format(new Date(duration)));
-        if (this.selectItem == position) {
-            tv_phone.setTypeface(null, Typeface.BOLD);
-            tv_phone.setPadding(16, 0, 0, 0);
+        if (calllog != null) {
+//            Log.d("phonelistener_tag", "------------- RecordingAdapter.getView() --------------");
+//            Log.d("phonelistener_tag", "position: " + position);
+//            for (int i = 0; i < list.size(); i++) {
+//                Log.d("phonelistener_tag", "list["+i+"]: " + list.get(i).toString());
+//            }
+//            Log.d("phonelistener_tag", "------------- RecordingAdapter.getView() --------------");
+            String phone = calllog.getPhone();
+            long time = calllog.getCreateTime();
+            long duration = calllog.getDuration();
+            TextView tv_phone = (TextView) convertView.findViewById(R.id.tv_phone);
+            TextView tv_time = (TextView) convertView.findViewById(R.id.tv_time);
+            TextView tv_duration = (TextView) convertView.findViewById(R.id.tv_duration);
+            tv_phone.setText(phone);
+            tv_time.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time)));
+            tv_duration.setText(new SimpleDateFormat("mm:ss").format(new Date(duration)));
+            if (this.selectItem == position) {
+                tv_phone.setTypeface(null, Typeface.BOLD);
+                tv_phone.setPadding(16, 0, 0, 0);
+            }
         }
         return convertView;
     }

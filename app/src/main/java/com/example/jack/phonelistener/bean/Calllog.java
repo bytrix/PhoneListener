@@ -61,4 +61,15 @@ public class Calllog {
     public void setFile(String file) {
         this.file = file;
     }
+
+    //    @Override
+//    public String toString() {
+//        return "Calllog{" +
+//                "id=" + id +
+//                ", phone='" + phone + '\'' +
+//                ", createTime=" + createTime +
+//                ", duration=" + duration +
+//                ", file='" + file + '\'' +
+//                '}';
+//    }
 }

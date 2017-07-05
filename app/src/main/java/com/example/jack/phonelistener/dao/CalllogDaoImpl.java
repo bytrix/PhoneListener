@@ -45,7 +45,9 @@ public class CalllogDaoImpl implements CalllogDao {
             calllogLatest.setId(id);
         }
 
-        if (calllog.getPhone().equals(calllogLatest.getPhone()) && (calllog.getCreateTime()-calllogLatest.getCreateTime()) < 1000) {
+        if (calllog.getPhone().equals(calllogLatest.getPhone())
+                && (calllog.getFile().equals(calllogLatest.getFile()))
+                && (calllog.getCreateTime()-calllogLatest.getCreateTime()) < 2000) {
             return 0;
         }
 
@@ -85,6 +87,7 @@ public class CalllogDaoImpl implements CalllogDao {
             long duration = cursor.getLong(3);
             String file = cursor.getString(4);
             calllog = new Calllog(phone, createTime, duration, file);
+            calllog.setId(id);
         }
 
         db.close();
