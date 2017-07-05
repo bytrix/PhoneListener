@@ -12,7 +12,7 @@
         <TextView
             android:id="@+id/tv_phone"
             android:text="phone"
-            android:textSize="22dp"
+            android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -20,7 +20,6 @@
             android:id="@+id/tv_time"
             android:text="time"
             android:textColor="#999"
-            android:textSize="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
@@ -28,7 +27,7 @@
     <TextView
         android:id="@+id/tv_duration"
         android:text="duration"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textColor="#999"
         android:layout_marginTop="10dp"
         android:layout_alignParentRight="true"

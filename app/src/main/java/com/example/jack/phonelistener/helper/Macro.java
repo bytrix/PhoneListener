@@ -5,8 +5,9 @@ package com.example.jack.phonelistener.helper;
  */
 
 public final class Macro {
-    public static final int MEDIAPLAYER_STATE_PAUSE = 1;
-    public static final int MEDIAPLAYER_STATE_STOP = 2;
-    public static final int MEDIAPLAYER_STATE_BACK = 3;
-    public static final int MEDIAPLAYER_STATE_FORWARD = 4;
+    public static final int MEDIAPLAYER_STATE_PLAY = 1;
+    public static final int MEDIAPLAYER_STATE_PAUSE = 2;
+    public static final int MEDIAPLAYER_STATE_STOP = 3;
+    public static final int MEDIAPLAYER_STATE_REWIND = 4;
+    public static final int MEDIAPLAYER_STATE_FAST = 5;
 }

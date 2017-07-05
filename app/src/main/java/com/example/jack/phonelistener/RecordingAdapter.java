@@ -57,8 +57,6 @@ public class RecordingAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Calllog calllog = (Calllog) list.get(position);
         convertView = View.inflate(context, R.layout.adapter_recording, null);
-//        String filename = calllog.getFile();
-//        String[] split = filename.replace(".3gp", "").split("_");
         String phone = calllog.getPhone();
         long time = calllog.getCreateTime();
         long duration = calllog.getDuration();
@@ -66,18 +64,11 @@ public class RecordingAdapter extends BaseAdapter {
         TextView tv_time = (TextView) convertView.findViewById(R.id.tv_time);
         TextView tv_duration = (TextView) convertView.findViewById(R.id.tv_duration);
         tv_phone.setText(phone);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tv_time.setText(simpleDateFormat.format(new Date(time)));
-        tv_duration.setText(String.valueOf(duration/1000) + "秒");
+        tv_time.setText( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time)));
+        tv_duration.setText(new SimpleDateFormat("mm:ss").format(new Date(duration)));
         if (this.selectItem == position) {
-//            tv_phone.setTextColor(Color.RED);
-//            convertView.setBackgroundColor(Color.LTGRAY);
             tv_phone.setTypeface(null, Typeface.BOLD);
             tv_phone.setPadding(16, 0, 0, 0);
-        } else {
-//            tv_phone.setTextColor(Color.BLACK);
-//            convertView.setBackgroundColor(Color.TRANSPARENT);
-//            tv_phone.setTypeface(null, Typeface.NORMAL);
         }
         return convertView;
     }

@@ -8,16 +8,7 @@
     android:orientation="vertical"
     tools:context="com.example.jack.phonelistener.MainActivity"
     >
-    <TextView
-        android:id="@+id/title"
-        android:text="电话录音"
-        android:textSize="24dp"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
     <ListView
-        android:layout_below="@id/title"
         android:id="@+id/lv_files"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,6 +22,7 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
+        android:background="#cfff"
         >
         <Space
             android:layout_width="0dp"
@@ -38,10 +30,10 @@
             android:layout_height="wrap_content"
             />
         <Button
-            android:id="@+id/btn_back"
-            android:background="@drawable/rewind"
-            android:layout_width="72px"
-            android:layout_height="72px"
+            android:id="@+id/btn_rewind"
+            android:background="@drawable/selector_rewind"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             />
         <Space
             android:layout_width="0dp"
@@ -50,9 +42,9 @@
             />
         <Button
             android:id="@+id/btn_play"
-            android:background="@drawable/play"
-            android:layout_width="72px"
-            android:layout_height="72px"
+            android:background="@drawable/selector_play"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             />
         <Space
             android:layout_width="0dp"
@@ -67,9 +59,9 @@
             <!--/>-->
         <Button
             android:id="@+id/btn_stop"
-            android:background="@drawable/stop"
-            android:layout_width="72px"
-            android:layout_height="72px"
+            android:background="@drawable/selector_stop"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             />
         <Space
             android:layout_width="0dp"
@@ -77,10 +69,10 @@
             android:layout_height="wrap_content"
             />
         <Button
-            android:id="@+id/btn_forward"
-            android:layout_width="72px"
-            android:layout_height="72px"
-            android:background="@drawable/fast"
+            android:id="@+id/btn_fast"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/selector_fast"
             />
         <Space
             android:layout_width="0dp"
@@ -95,12 +87,16 @@
         style="?android:progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#cfff"
         />
     <TextView
         android:id="@+id/tv_calllog_info"
         android:layout_above="@id/pb"
-        android:paddingLeft="10dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#cfff"
         />
 </RelativeLayout>

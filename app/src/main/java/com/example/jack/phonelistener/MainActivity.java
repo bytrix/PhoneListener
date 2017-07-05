@@ -8,23 +8,20 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jack.phonelistener.R;
-import com.example.jack.phonelistener.RecordingAdapter;
 import com.example.jack.phonelistener.bean.Calllog;
 import com.example.jack.phonelistener.dao.CalllogDao;
 import com.example.jack.phonelistener.dao.CalllogDaoImpl;
 import com.example.jack.phonelistener.helper.Macro;
-import com.example.jack.phonelistener.helper.SQLiteHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,20 +43,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private MediaPlayer mediaPlayer;
     private Runnable runnable;
     private TextView tv_calllog_info;
-    private Button btn_back;
-    private Button btn_forward;
+    private Button btn_rewind;
+    private Button btn_fast;
     private SimpleDateFormat simpleDateFormat;
-    private boolean isPlaying;
+    private boolean isGoingToPlay = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SQLiteHelper helper = new SQLiteHelper(this);
-        helper.getReadableDatabase();
+//        SQLiteHelper helper = new SQLiteHelper(this);
+//        SQLiteDatabase db = helper.getReadableDatabase();
+
 
         calllogDao = new CalllogDaoImpl(this);
+//        calllogDao.insert(new Calllog("15716017670", System.currentTimeMillis(), 10000, "1499083327595.3gp"));
 
         final File root = new File(Environment.getExternalStorageDirectory()+File.separator+"Recording");
         if (!root.exists()) {
@@ -72,17 +71,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
         btn_play = (Button) findViewById(R.id.btn_play);
 //        btn_pause = (Button) findViewById(R.id.btn_pause);
         btn_stop = (Button) findViewById(R.id.btn_stop);
-        btn_back = (Button) findViewById(R.id.btn_back);
-        btn_forward = (Button) findViewById(R.id.btn_forward);
+        btn_rewind = (Button) findViewById(R.id.btn_rewind);
+        btn_fast = (Button) findViewById(R.id.btn_fast);
         tv_calllog_info = (TextView) findViewById(R.id.tv_calllog_info);
 
         btn_play.setOnClickListener(this);
 //        btn_pause.setOnClickListener(this);
         btn_stop.setOnClickListener(this);
-        btn_back.setOnClickListener(this);
-        btn_forward.setOnClickListener(this);
+        btn_rewind.setOnClickListener(this);
+        btn_fast.setOnClickListener(this);
 
         btn_play.setEnabled(false);
+        btn_stop.setEnabled(false);
+        btn_fast.setEnabled(false);
+        btn_rewind.setEnabled(false);
 
         handler = new Handler();
 
@@ -128,7 +130,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                Toast.makeText(MainActivity.this, calllogList.get(position).getFile(), Toast.LENGTH_SHORT).show();
                 adapter.setSelectItem(position);
                 adapter.notifyDataSetInvalidated();
-                Log.d("phonelistener_tag", "position: " + position + ", " + "selectItem: " + adapter.getSelectItem());
+//                Log.d("phonelistener_tag", "position: " + position + ", " + "selectItem: " + adapter.getSelectItem());
+                Message msg = Message.obtain();
+                msg.what = Macro.MEDIAPLAYER_STATE_PLAY;
+                handler.sendMessage(msg);
 
                 if (mediaPlayer != null) {
                     mediaPlayer.stop();
@@ -151,74 +156,80 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     tv_phone.setTextColor(Color.RED);
 
                     runnable = new Runnable() {
-
                         private int progress;
                         int timestamps;
 
                         @Override
                         public void run() {
-//                            Date time = new java.util.Date(mediaPlayer.getCurrentPosition());
-                            if (mediaPlayer.isPlaying()) {
-                                handler.postDelayed(this, 1);
-                                progress = (int) ((mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100);
-                                timestamps = mediaPlayer.getCurrentPosition();
-                                tv_calllog_info.setText(simpleDateFormat.format(new Date(timestamps)) + " 正在播放：" + calllogList.get(position).getFile());
-                                btn_play.setEnabled(true);
-//                                btn_play.setText("Pause");
-                                btn_play.setBackgroundResource(R.drawable.pause);
-                            }
-                            if ((progress==99 && !mediaPlayer.isPlaying()) || handler.hasMessages(Macro.MEDIAPLAYER_STATE_STOP)) {
-                                progress = 0;
-                                timestamps = 0;
-                                btn_stop.setEnabled(false);
-                                btn_play.setEnabled(true);
-                                mediaPlayer.stop();
-                                mediaPlayer.release();
-                                mediaPlayer = null;
-                                handler.removeCallbacks(this);
-                                adapter.setSelectItem(-1);
-                                adapter.notifyDataSetInvalidated();
-                                tv_calllog_info.setText(simpleDateFormat.format(timestamps) + " 播放完毕：" + calllogList.get(position).getFile());
-                                btn_play.setBackgroundResource(R.drawable.play);
-                            }
-//                            if (handler.hasMessages(Macro.MEDIAPLAYER_STATE_STOP)) {
-//                                progress = 0;
-//                                timestamps = 0;
-//                                btn_stop.setEnabled(false);
-//                                btn_play.setEnabled(true);
-////                                mediaPlayer.seekTo(progress);
-////                                mediaPlayer.pause();
-//                                mediaPlayer.stop();
-//                                mediaPlayer.release();
-//                                mediaPlayer = null;
-//                                handler.removeCallbacks(this);
-//                                tv_calllog_info.setText(simpleDateFormat.format(timestamps) + " 播放完毕：" + calllogList.get(position).getFile());
-//                                btn_play.setBackgroundResource(R.drawable.play);
-//                            }
-                            if (handler.hasMessages(Macro.MEDIAPLAYER_STATE_PAUSE)) {
-//                                Toast.makeText(MainActivity.this, "pause", Toast.LENGTH_SHORT).show();
-                                btn_play.setEnabled(true);
-//                                btn_pause.setEnabled(false);
-                                btn_stop.setEnabled(false);
-                                mediaPlayer.pause();
-                                handler.removeCallbacks(this);
-                                tv_calllog_info.setText(simpleDateFormat.format(timestamps) + " 暂停播放：" + calllogList.get(position).getFile());
-                                btn_play.setEnabled(true);
-//                                btn_play.setText("Play");
-                                btn_play.setBackgroundResource(R.drawable.play);
-                            }
-                            if (handler.hasMessages(Macro.MEDIAPLAYER_STATE_BACK)) {
-                                int currentPosition = mediaPlayer.getCurrentPosition();
-                                mediaPlayer.seekTo(currentPosition-5000);
-                            }
-                            if (handler.hasMessages(Macro.MEDIAPLAYER_STATE_FORWARD)) {
-                                int currentPosition = mediaPlayer.getCurrentPosition();
-                                mediaPlayer.seekTo(currentPosition+5000);
-                            }
+
+                            progress = (int) ((mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100);
+                            timestamps = mediaPlayer.getCurrentPosition();
+                            tv_calllog_info.setText(simpleDateFormat.format(new Date(timestamps)) + " 正在播放：" + calllogList.get(position).getFile());
+                            btn_play.setEnabled(true);
+                            btn_stop.setEnabled(true);
+                            btn_fast.setEnabled(true);
+                            btn_rewind.setEnabled(true);
+                            btn_fast.setEnabled(true);
+                            btn_play.setBackgroundResource(R.drawable.selector_pause);
+
+                            handler = new Handler() {
+
+                                private int currentPosition;
+
+                                @Override
+                                public void handleMessage(Message msg) {
+                                    switch (msg.what) {
+                                        case Macro.MEDIAPLAYER_STATE_PAUSE:
+            //                                Toast.makeText(MainActivity.this, "pause", Toast.LENGTH_SHORT).show();
+            //                                btn_play.setEnabled(true);
+            //                                btn_pause.setEnabled(false);
+            //                                isGoingToPlay = false;
+            //                                btn_stop.setEnabled(false);
+                                            mediaPlayer.pause();
+                                            tv_calllog_info.setText(simpleDateFormat.format(timestamps) + " 暂停播放：" + calllogList.get(position).getFile());
+                                            btn_play.setEnabled(true);
+                                            btn_stop.setEnabled(true);
+                                            btn_rewind.setEnabled(false);
+                                            btn_fast.setEnabled(false);
+                                            btn_play.setBackgroundResource(R.drawable.selector_play);
+                                            handler.removeCallbacks(runnable);
+                                            break;
+                                        case Macro.MEDIAPLAYER_STATE_STOP:
+                                            progress = 0;
+                                            timestamps = 0;
+                                            btn_stop.setEnabled(false);
+                                            btn_play.setEnabled(true);
+                                            btn_rewind.setEnabled(false);
+                                            btn_fast.setEnabled(false);
+                                            pb.setProgress(progress);
+                                            mediaPlayer.seekTo(progress);
+                                            mediaPlayer.pause();
+//                                            mediaPlayer.stop();
+//                                            mediaPlayer.release();
+//                                            mediaPlayer = null;
+//                                            adapter.setSelectItem(-1);
+                                            adapter.notifyDataSetInvalidated();
+                                            tv_calllog_info.setText(simpleDateFormat.format(timestamps) + " 播放完毕：" + calllogList.get(position).getFile());
+                                            btn_play.setBackgroundResource(R.drawable.selector_play);
+                                            handler.removeCallbacks(runnable);
+                                            break;
+                                        case Macro.MEDIAPLAYER_STATE_REWIND:
+                                            currentPosition = mediaPlayer.getCurrentPosition();
+                                            mediaPlayer.seekTo(currentPosition -5000);
+                                            break;
+                                        case Macro.MEDIAPLAYER_STATE_FAST:
+                                            currentPosition = mediaPlayer.getCurrentPosition();
+                                            mediaPlayer.seekTo(currentPosition +5000);
+                                            break;
+                                    }
+                                }
+                            };
                             pb.setProgress(progress);
+                            handler.postDelayed(this, 1);
                         }
                     };
                     handler.post(runnable);
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -232,11 +243,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //
 //                    @Override
 //                    public void run() {
-//                        if (mediaPlayer.isPlaying()) {
+//                        if (mediaPlayer.isGoingToPlay()) {
 //                            handler.postDelayed(this, 1);
 //                            progress = (int) ((mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100);
 //                        }
-//                        if (progress==99 && !mediaPlayer.isPlaying()) {
+//                        if (progress==99 && !mediaPlayer.isGoingToPlay()) {
 //                            mediaPlayer.stop();
 //                            mediaPlayer.release();
 //                            mediaPlayer = null;
@@ -325,29 +336,41 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_play:
-                isPlaying = !isPlaying;
-                if (isPlaying) {
+//                btn_play.setBackgroundResource(R.drawable.play);
+//                isGoingToPlay = !isGoingToPlay;
+//                Toast.makeText(this, "isGoingToPlay: " + isGoingToPlay, Toast.LENGTH_SHORT).show();
+                if (isGoingToPlay) {
+//                    Toast.makeText(this, "play", Toast.LENGTH_SHORT).show();
                     mediaPlayer.start();
-                    btn_play.setEnabled(false);
-//                btn_pause.setEnabled(true);
-                    btn_stop.setEnabled(true);
+//                    btn_play.setEnabled(false);
+//                    btn_stop.setEnabled(true);
                     handler.postDelayed(runnable, 1);
+//                    handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_PLAY);
+//                    btn_play.setBackgroundResource(R.drawable.pause);
+                    isGoingToPlay = false;
                 } else {
+//                    Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
                     handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_PAUSE);
+//                    btn_play.setBackgroundResource(R.drawable.play);
+                    isGoingToPlay = true;
                 }
                 break;
 //            case R.id.btn_pause:
 //                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_PAUSE);
 //                break;
             case R.id.btn_stop:
+                isGoingToPlay = true;
                 handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_STOP);
                 break;
-            case R.id.btn_back:
-                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_BACK);
+            case R.id.btn_rewind:
+//                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_BACK);
+                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_REWIND);
                 break;
-            case R.id.btn_forward:
-                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_FORWARD);
+            case R.id.btn_fast:
+//                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_FORWARD);
+                handler.sendEmptyMessage(Macro.MEDIAPLAYER_STATE_FAST);
                 break;
         }
+        Log.d("phonelistener_tag", "isGoingToPlay: " + isGoingToPlay);
     }
 }
