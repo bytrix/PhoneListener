@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,6 +31,7 @@ import com.example.jack.phonelistener.helper.Macro;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +71,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        calllogList = new ArrayList<>();
+//        calllogList.add(new Calllog("123", 123, 123, "file1"));
+//        calllogList.add(new Calllog("1231", 123, 123, "file2"));
+//
+//        Log.d("phonelistener_tag", "calllogList.contains(): " + calllogList.contains(new Calllog("123", 123, 123, "file1")));
+
+//        Calllog c1 = new Calllog("123", 123, 123, "file1");
+//        Calllog c2 = new Calllog("123", 123, 123, "file1");
+//        Log.d("phonelistener_tag", "c1.hashCode(): " + c1.hashCode() + ", c1.toString(): " + c1.toString());
+//        Log.d("phonelistener_tag", "c2.hashCode(): " + c2.hashCode() + ", c2.toString(): " + c2.toString());
+
 
         Intent service = new Intent(MainActivity.this, PhoneService.class);
         bindService(service, conn, BIND_AUTO_CREATE);
@@ -157,6 +171,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 mediaPlayer = new MediaPlayer();
                 try {
+                    Log.d("phonelistener_tag", "dataSource: " + root+File.separator+ calllogList.get(position).getFile());
                     mediaPlayer.setDataSource(root+File.separator+ calllogList.get(position).getFile());
 //                    mediaPlayer.setDataSource(Environment.getExternalStorageDirectory()+File.separator+"Ghost Town-Adam Lambert.mp3");
                     mediaPlayer.prepare();
@@ -316,22 +331,31 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onStart() {
-        Log.d("phonelistener_tag", "---------- onStart ----------");
+//        Log.d("phonelistener_tag", "---------- onStart ----------");
         super.onStart();
-        if (mBinder != null) {
-//            newCalllog = calllogDao.query(mBinder.getId());
+        if (mBinder != null && mBinder.getService().isOffhook()) {
+//        if (mBinder != null) {
             newCalllog = calllogDao.query(mBinder.getService().getId());
+//            Log.d("phonelistener_tag", "\t--- before adding newCalllog ---");
+//            for (int i = 0; i < calllogList.size(); i++) {
+//                Log.d("phonelistener_tag", "hashCode: " + calllogList.get(i).hashCode() + ", toString: " + calllogList.get(i).toString());
+//            }
+//            Log.d("phonelistener_tag", "\t--- end before adding newCalllog ---");
             if (!calllogList.contains(newCalllog)) {
                 calllogList.add(newCalllog);
             }
+//            Log.d("phonelistener_tag", "\t--- after adding newCalllog ---");
+//            for (int i = 0; i < calllogList.size(); i++) {
+//                Log.d("phonelistener_tag", "hashCode: " + calllogList.get(i).hashCode() + ", toString: " + calllogList.get(i).toString());
+//            }
+//            Log.d("phonelistener_tag", "\t--- end after adding newCalllog ---");
             adapter.notifyDataSetChanged();
-//            Log.d("phonelistener_tag", "mBinder.getId(): " + mBinder.getId());
-            Log.d("phonelistener_tag", "mBinder.getService().getId(): " + mBinder.getService().getId());
-            Log.d("phonelistener_tag", "mBinder.doSomething(): " + mBinder.doSomething());
-            Log.d("phonelistener_tag", "newCalllog: " + newCalllog);
-            Log.d("phonelistener_tag", "calllogList.size(): " + calllogList.size());
+//            Log.d("phonelistener_tag", "mBinder.getService().getId(): " + mBinder.getService().getId());
+//            Log.d("phonelistener_tag", "mBinder.doSomething(): " + mBinder.doSomething());
+//            Log.d("phonelistener_tag", "newCalllog: " + newCalllog);
+//            Log.d("phonelistener_tag", "calllogList.size(): " + calllogList.size());
         }
-        Log.d("phonelistener_tag", "---------- onStart ----------");
+//        Log.d("phonelistener_tag", "---------- onStart ----------");
     }
 
     @Override

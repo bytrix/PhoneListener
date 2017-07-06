@@ -31,6 +31,7 @@ public class PhoneReceiver extends BroadcastReceiver {
     private long lastCreateTime;
     private static long currentTimeMillis;
     private static long rowId;
+//    private static boolean isOffhook;
     private PhoneService.PhoneBinder mBinder;
 
     private ServiceConnection conn = new ServiceConnection() {
@@ -97,6 +98,8 @@ public class PhoneReceiver extends BroadcastReceiver {
                         break;
                     case TelephonyManager.CALL_STATE_OFFHOOK:
 //                        long current = System.currentTimeMillis();
+//                        isOffhook = true;
+                        mBinder.getService().setOffhook(true);
                         startTime = System.currentTimeMillis();
                         if (this.incomingNumber == null) {
                             return;

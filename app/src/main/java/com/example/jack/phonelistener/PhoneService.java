@@ -8,6 +8,15 @@ import android.widget.Toast;
 
 public class PhoneService extends Service {
     private long id;
+    private boolean isOffhook;
+
+    public boolean isOffhook() {
+        return isOffhook;
+    }
+
+    public void setOffhook(boolean offhook) {
+        isOffhook = offhook;
+    }
 
     public long getId() {
         return this.id;

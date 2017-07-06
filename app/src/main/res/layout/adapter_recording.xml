@@ -27,7 +27,6 @@
     <TextView
         android:id="@+id/tv_duration"
         android:text="duration"
-        android:textSize="16sp"
         android:textColor="#999"
         android:layout_marginTop="10dp"
         android:layout_alignParentRight="true"

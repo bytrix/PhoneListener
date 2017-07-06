@@ -1,5 +1,7 @@
 package com.example.jack.phonelistener.bean;
 
+import android.util.Log;
+
 /**
  * Created by jack on 17-7-3.
  */
@@ -62,14 +64,37 @@ public class Calllog {
         this.file = file;
     }
 
-    //    @Override
-//    public String toString() {
-//        return "Calllog{" +
-//                "id=" + id +
-//                ", phone='" + phone + '\'' +
-//                ", createTime=" + createTime +
-//                ", duration=" + duration +
-//                ", file='" + file + '\'' +
-//                '}';
-//    }
+    @Override
+    public boolean equals(Object obj) {
+//        return super.equals(obj);
+        if (obj == null) return false;
+        if (!(obj instanceof Calllog)) return false;
+        Calllog calllog = (Calllog) obj;
+        Log.d("phonelistener_tag", "-- equals --");
+        Log.d("phonelistener_tag", "this.id == calllog.id: " + (this.id == calllog.id));
+        Log.d("phonelistener_tag", "this.phone.equals(calllog.phone): " + (this.phone.equals(calllog.phone)));
+        Log.d("phonelistener_tag", "this.createTime == calllog.createTime: " + (this.createTime == calllog.createTime));
+        Log.d("phonelistener_tag", "this.duration == calllog.duration: " + (this.duration == calllog.duration));
+        Log.d("phonelistener_tag", "this.file.equals(calllog.file): " + (this.file.equals(calllog.file)));
+        Log.d("phonelistener_tag", "-- end equals --");
+        if (this.id == calllog.id
+                && this.phone.equals(calllog.phone)
+                && this.createTime == calllog.createTime
+                && this.duration == calllog.duration
+                && this.file.equals(calllog.file)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Calllog{" +
+                "id=" + id +
+                ", phone='" + phone + '\'' +
+                ", createTime=" + createTime +
+                ", duration=" + duration +
+                ", file='" + file + '\'' +
+                '}';
+    }
 }
