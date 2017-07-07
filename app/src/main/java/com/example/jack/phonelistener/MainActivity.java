@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,7 +30,6 @@ import com.example.jack.phonelistener.helper.Macro;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -331,11 +329,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onStart() {
-//        Log.d("phonelistener_tag", "---------- onStart ----------");
+        Log.d("phonelistener_tag", "---------- onStart ----------");
         super.onStart();
-        if (mBinder != null && mBinder.getService().isOffhook()) {
+        if (mBinder == null) {
+            return;
+        }
+        boolean isOffhook = mBinder.getService().isOffhook();
+        long rowId = mBinder.getService().getId();
+        Log.d("phonelistener_tag", "onStart, isOffhook: " + isOffhook);
+        Log.d("phonelistener_tag", "onStart, rowId: " + rowId);
+        if (isOffhook && rowId!=0) {
 //        if (mBinder != null) {
-            newCalllog = calllogDao.query(mBinder.getService().getId());
+//            Log.d("phonelistener_tag", "mBinder.getService().isOffhook(): " + mBinder.getService().isOffhook());
+            newCalllog = calllogDao.query(rowId);
+            Log.d("phonelistener_tag", "mBinder.getService().getId(): " + rowId);
+            Log.d("phonelistener_tag", "newCalllog: " + newCalllog);
 //            Log.d("phonelistener_tag", "\t--- before adding newCalllog ---");
 //            for (int i = 0; i < calllogList.size(); i++) {
 //                Log.d("phonelistener_tag", "hashCode: " + calllogList.get(i).hashCode() + ", toString: " + calllogList.get(i).toString());
@@ -355,7 +363,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //            Log.d("phonelistener_tag", "newCalllog: " + newCalllog);
 //            Log.d("phonelistener_tag", "calllogList.size(): " + calllogList.size());
         }
-//        Log.d("phonelistener_tag", "---------- onStart ----------");
+        Log.d("phonelistener_tag", "---------- onStart ----------");
     }
 
     @Override

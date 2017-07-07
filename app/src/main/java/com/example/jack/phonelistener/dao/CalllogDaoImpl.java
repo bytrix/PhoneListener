@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.jack.phonelistener.bean.Calllog;
 import com.example.jack.phonelistener.dao.CalllogDao;
@@ -48,6 +49,12 @@ public class CalllogDaoImpl implements CalllogDao {
         if (calllog.getPhone().equals(calllogLatest.getPhone())
                 && (calllog.getFile().equals(calllogLatest.getFile()))
                 && (calllog.getCreateTime()-calllogLatest.getCreateTime()) < 2000) {
+            Log.d("phonelistener_tag", "--- insert ---");
+            Log.d("phonelistener_tag", "calllog.getPhone(): " + calllog.getPhone() + ", calllogLatest.getPhone(): " + calllogLatest.getPhone());
+            Log.d("phonelistener_tag", "calllog.getFile(): " + calllog.getFile() + ", calllogLatest.getFile(): " + calllogLatest.getFile());
+            Log.d("phonelistener_tag", "calllog.getCreateTime(): " + calllog.getCreateTime() + ", calllogLatest.getCreateTime(): " + calllogLatest.getCreateTime());
+            Log.d("phonelistener_tag", "--- end insert ---");
+            Log.d("phonelistener_tag", "--> INSERT NOT OK!");
             return 0;
         }
 
@@ -59,6 +66,7 @@ public class CalllogDaoImpl implements CalllogDao {
         long rowId = db.insert("t_calllog", null, values);
 
         db.close();
+        Log.d("phonelistener_tag", "--> INSERT OK, rowId: " + rowId);
         return rowId;
     }
 

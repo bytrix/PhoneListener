@@ -101,7 +101,7 @@ public class PhoneReceiver extends BroadcastReceiver {
 //                        isOffhook = true;
                         mBinder.getService().setOffhook(true);
                         startTime = System.currentTimeMillis();
-                        if (this.incomingNumber == null) {
+                        if (incomingNumber == null) {
                             return;
                         }
                         Log.i("phonelistener_tag", "current: " + System.currentTimeMillis());
@@ -137,15 +137,15 @@ public class PhoneReceiver extends BroadcastReceiver {
                                 mediaRecorder = null;
                                 endTime = System.currentTimeMillis();
                                 Calllog calllog = new Calllog(this.incomingNumber, startTime, endTime-startTime, file.getName());
-                                Log.i("phonelistener_tag", "begin to insert...");
+//                                Log.i("phonelistener_tag", "begin to insert...");
                                 rowId = calllogDao.insert(calllog);
-                                Log.i("phonelistener_tag", "insert over, rowId: " + rowId);
-                                Toast.makeText(context, "录音结束，文件保存至：" + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-//                                mBinder.setId(rowId);
+                                Log.i("phonelistener_tag", "PhoneReceiver, insert over, rowId: " + rowId);
                                 if (rowId != 0) {
+                                    Toast.makeText(context, "录音结束，文件保存至：" + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                                     mBinder.getService().setId(rowId);
                                 }
-                                Log.i("phonelistener_tag", "mBinder.getService.getId(): " + mBinder.getService().getId());
+//                                mBinder.setId(rowId);
+//                                Log.i("phonelistener_tag", "mBinder.getService.getId(): " + mBinder.getService().getId());
 //                                Toast.makeText(context, "rowId: " + mBinder.setId(rowId);, Toast.LENGTH_LONG).show();
 //                            files = root.list();
 //                            lv_files.deferNotifyDataSetChanged();

@@ -7,8 +7,8 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 public class PhoneService extends Service {
-    private long id;
-    private boolean isOffhook;
+    private static long id;
+    private static boolean isOffhook;
 
     public boolean isOffhook() {
         return isOffhook;
